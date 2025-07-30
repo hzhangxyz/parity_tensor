@@ -67,6 +67,8 @@ class ParityTensor:
         """
         Permute the indices of the parity tensor.
         """
+        assert set(before_by_after) == set(range(self.tensor.dim())), "Permutation indices must cover all dimensions."
+
         edges = tuple(self.edges[i] for i in before_by_after)
         tensor = self.tensor.permute(before_by_after)
         parity = tuple(self.parity[i] for i in before_by_after)
