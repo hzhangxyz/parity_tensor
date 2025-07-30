@@ -20,7 +20,7 @@ class ParityTensor:
     edges: tuple[tuple[int, int], ...]
     tensor: torch.Tensor
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert len(self.edges) == self.tensor.dim(), f"Edges length ({len(self.edges)}) must match tensor dimensions ({self.tensor.dim()})."
         for dim, (even, odd) in zip(self.tensor.shape, self.edges):
             assert even >= 0 and odd >= 0 and dim == even + odd, f"Dimension {dim} must equal sum of even ({even}) and odd ({odd}) parts, and both must be non-negative."
@@ -31,7 +31,7 @@ class ParityTensor:
         """
         assert self.edges == other.edges, f"Edges must match for arithmetic operations. Got {self.edges} and {other.edges}."
 
-    def __add__(self, other):
+    def __add__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
             self._validate_edge_compatibility(other)
             return ParityTensor(
@@ -44,13 +44,13 @@ class ParityTensor:
                 tensor=self.tensor + other,
             )
 
-    def __radd__(self, other):
+    def __radd__(self, other) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=other + self.tensor,
         )
 
-    def __iadd__(self, other):
+    def __iadd__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
             self.tensor += other.tensor
@@ -58,7 +58,7 @@ class ParityTensor:
             self.tensor += other
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
             self._validate_edge_compatibility(other)
             return ParityTensor(
@@ -71,13 +71,13 @@ class ParityTensor:
                 tensor=self.tensor - other,
             )
 
-    def __rsub__(self, other):
+    def __rsub__(self, other) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=other - self.tensor,
         )
 
-    def __isub__(self, other):
+    def __isub__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
             self.tensor -= other.tensor
@@ -85,7 +85,7 @@ class ParityTensor:
             self.tensor -= other
         return self
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
             self._validate_edge_compatibility(other)
             return ParityTensor(
@@ -98,13 +98,13 @@ class ParityTensor:
                 tensor=self.tensor * other,
             )
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=other * self.tensor,
         )
 
-    def __imul__(self, other):
+    def __imul__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
             self.tensor *= other.tensor
@@ -112,7 +112,7 @@ class ParityTensor:
             self.tensor *= other
         return self
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
             self._validate_edge_compatibility(other)
             return ParityTensor(
@@ -125,13 +125,13 @@ class ParityTensor:
                 tensor=self.tensor / other,
             )
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=other / self.tensor,
         )
 
-    def __itruediv__(self, other):
+    def __itruediv__(self, other) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
             self.tensor /= other.tensor
@@ -139,13 +139,13 @@ class ParityTensor:
             self.tensor /= other
         return self
 
-    def __pos__(self):
+    def __pos__(self) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=+self.tensor,
         )
 
-    def __neg__(self):
+    def __neg__(self) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
             tensor=-self.tensor,
