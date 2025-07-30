@@ -81,7 +81,7 @@ class ParityTensor:
                 for j in range(self.tensor.dim())
                 for i in range(0, j)  # all 0 <= i < j < dim
                 if before_by_after[i] > before_by_after[j]),
-            torch.zeros([], dtype=torch.bool),
+            torch.zeros([], dtype=torch.bool, device=self.tensor.device),
         )
         tensor = torch.where(total_parity, -tensor, +tensor)
 
@@ -97,13 +97,11 @@ class ParityTensor:
         for dim, (even, odd) in zip(self._tensor.shape, self._edges):
             assert even >= 0 and odd >= 0 and dim == even + odd, f"Dimension {dim} must equal sum of even ({even}) and odd ({odd}) parts, and both must be non-negative."
 
-    @classmethod
-    def _unqueeze(cls, tensor: torch.Tensor, index: int, dim: int) -> torch.Tensor:
+    def _unqueeze(self, tensor: torch.Tensor, index: int, dim: int) -> torch.Tensor:
         return tensor.view([-1 if i == index else 1 for i in range(dim)])
 
-    @classmethod
-    def _edge_mask(cls, even: int, odd: int) -> torch.Tensor:
-        return torch.cat([torch.zeros(even, dtype=torch.bool), torch.ones(odd, dtype=torch.bool)])
+    def _edge_mask(self, even: int, odd: int) -> torch.Tensor:
+        return torch.cat([torch.zeros(even, dtype=torch.bool, device=self.tensor.device), torch.ones(odd, dtype=torch.bool, device=self.tensor.device)])
 
     def _tensor_mask(self) -> torch.Tensor:
         return functools.reduce(
