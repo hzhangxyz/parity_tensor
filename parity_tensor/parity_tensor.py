@@ -29,7 +29,7 @@ class ParityTensor:
         """
         Validate that the edges of two ParityTensor instances are compatible for arithmetic operations.
         """
-        assert self.edges == other.edges, "Edges must match for arithmetic operations."
+        assert self.edges == other.edges, f"Edges must match for arithmetic operations. Got {self.edges} and {other.edges}."
 
     def __add__(self, other):
         if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
