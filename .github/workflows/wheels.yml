@@ -11,6 +11,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all tags
+        run: git fetch --tags --force
+        # See: https://github.com/actions/checkout/issues/290
 
       - name: Build dist
         run: pipx run build
