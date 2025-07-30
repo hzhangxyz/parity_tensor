@@ -56,6 +56,17 @@ class ParityTensor:
             self._mask = self._tensor_mask()
         return self._mask
 
+    def to(self, device: torch.device) -> ParityTensor:
+        """
+        Copy the tensor to a specified device.
+        """
+        return ParityTensor(
+            _edges=self._edges,
+            _tensor=self._tensor.to(device),
+            _parity=tuple(p.to(device) for p in self._parity) if self._parity is not None else None,
+            _mask=self._mask.to(device) if self._mask is not None else None,
+        )
+
     def update_mask(self) -> ParityTensor:
         """
         Update the mask of the tensor based on its parity.
