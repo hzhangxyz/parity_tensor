@@ -14,16 +14,6 @@ description = "A parity tensor package"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 
-[tool.setuptools_scm]
-version_file = "parity_tensor/_version.py"
-version_scheme = "no-guess-dev"
-fallback_version = "0.0.0"
-
-
-[tool.yapf]
-based_on_style = "google"
-column_limit = 200
-
 [project.optional-dependencies]
 dev = [
   "yapf",
@@ -32,3 +22,16 @@ dev = [
   "pytest",
   "pytest-cov",
 ]
+
+[tool.setuptools_scm]
+version_file = "parity_tensor/_version.py"
+version_scheme = "no-guess-dev"
+fallback_version = "0.0.0"
+
+[tool.yapf]
+based_on_style = "google"
+column_limit = 200
+
+[tool.pylint]
+max-line-length = 200
+ignore-paths = ["parity_tensor/_version.py"]
