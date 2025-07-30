@@ -51,7 +51,10 @@ class ParityTensor:
                 edges=self.edges,
                 tensor=self.tensor + other.tensor,
             )
-        result = self.tensor + other
+        try:
+            result = self.tensor + other
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -60,7 +63,10 @@ class ParityTensor:
         return NotImplemented
 
     def __radd__(self, other: typing.Any) -> ParityTensor:
-        result = other + self.tensor
+        try:
+            result = other + self.tensor
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -83,7 +89,10 @@ class ParityTensor:
                 edges=self.edges,
                 tensor=self.tensor - other.tensor,
             )
-        result = self.tensor - other
+        try:
+            result = self.tensor - other
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -92,7 +101,10 @@ class ParityTensor:
         return NotImplemented
 
     def __rsub__(self, other: typing.Any) -> ParityTensor:
-        result = other - self.tensor
+        try:
+            result = other - self.tensor
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -115,7 +127,10 @@ class ParityTensor:
                 edges=self.edges,
                 tensor=self.tensor * other.tensor,
             )
-        result = self.tensor * other
+        try:
+            result = self.tensor * other
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -124,7 +139,10 @@ class ParityTensor:
         return NotImplemented
 
     def __rmul__(self, other: typing.Any) -> ParityTensor:
-        result = other * self.tensor
+        try:
+            result = other * self.tensor
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -147,7 +165,10 @@ class ParityTensor:
                 edges=self.edges,
                 tensor=self.tensor / other.tensor,
             )
-        result = self.tensor / other
+        try:
+            result = self.tensor / other
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
@@ -156,7 +177,10 @@ class ParityTensor:
         return NotImplemented
 
     def __rtruediv__(self, other: typing.Any) -> ParityTensor:
-        result = other / self.tensor
+        try:
+            result = other / self.tensor
+        except TypeError:
+            return NotImplemented
         if isinstance(result, torch.Tensor):
             return ParityTensor(
                 edges=self.edges,
