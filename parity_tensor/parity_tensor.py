@@ -23,7 +23,7 @@ class ParityTensor:
     def __post_init__(self):
         assert len(self.edges) == self.tensor.dim(), "Edges length must match tensor dimensions."
         for dim, (even, odd) in zip(self.tensor.shape, self.edges):
-            assert even >= 0 and odd >= 0 and dim == even + odd, "Each dimension must match the sum of even and odd parts."
+            assert even >= 0 and odd >= 0 and dim == even + odd, f"Dimension {dim} must equal sum of even ({even}) and odd ({odd}) parts, and both must be non-negative."
 
     def _validate_edge_compatibility(self, other: ParityTensor) -> None:
         """
