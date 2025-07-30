@@ -7,6 +7,7 @@ from __future__ import annotations
 __all__ = ["ParityTensor"]
 
 import dataclasses
+import typing
 import torch
 
 
@@ -31,114 +32,6 @@ class ParityTensor:
         """
         assert self.edges == other.edges, f"Edges must match for arithmetic operations. Got {self.edges} and {other.edges}."
 
-    def __add__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
-            self._validate_edge_compatibility(other)
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor + other.tensor,
-            )
-        else:
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor + other,
-            )
-
-    def __radd__(self, other) -> ParityTensor:
-        return ParityTensor(
-            edges=self.edges,
-            tensor=other + self.tensor,
-        )
-
-    def __iadd__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):
-            self._validate_edge_compatibility(other)
-            self.tensor += other.tensor
-        else:
-            self.tensor += other
-        return self
-
-    def __sub__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
-            self._validate_edge_compatibility(other)
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor - other.tensor,
-            )
-        else:
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor - other,
-            )
-
-    def __rsub__(self, other) -> ParityTensor:
-        return ParityTensor(
-            edges=self.edges,
-            tensor=other - self.tensor,
-        )
-
-    def __isub__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):
-            self._validate_edge_compatibility(other)
-            self.tensor -= other.tensor
-        else:
-            self.tensor -= other
-        return self
-
-    def __mul__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
-            self._validate_edge_compatibility(other)
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor * other.tensor,
-            )
-        else:
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor * other,
-            )
-
-    def __rmul__(self, other) -> ParityTensor:
-        return ParityTensor(
-            edges=self.edges,
-            tensor=other * self.tensor,
-        )
-
-    def __imul__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):
-            self._validate_edge_compatibility(other)
-            self.tensor *= other.tensor
-        else:
-            self.tensor *= other
-        return self
-
-    def __truediv__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):  # pylint: disable=no-else-return
-            self._validate_edge_compatibility(other)
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor / other.tensor,
-            )
-        else:
-            return ParityTensor(
-                edges=self.edges,
-                tensor=self.tensor / other,
-            )
-
-    def __rtruediv__(self, other) -> ParityTensor:
-        return ParityTensor(
-            edges=self.edges,
-            tensor=other / self.tensor,
-        )
-
-    def __itruediv__(self, other) -> ParityTensor:
-        if isinstance(other, ParityTensor):
-            self._validate_edge_compatibility(other)
-            self.tensor /= other.tensor
-        else:
-            self.tensor /= other
-        return self
-
     def __pos__(self) -> ParityTensor:
         return ParityTensor(
             edges=self.edges,
@@ -150,3 +43,131 @@ class ParityTensor:
             edges=self.edges,
             tensor=-self.tensor,
         )
+
+    def __add__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            return ParityTensor(
+                edges=self.edges,
+                tensor=self.tensor + other.tensor,
+            )
+        result = self.tensor + other
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __radd__(self, other: typing.Any) -> ParityTensor:
+        result = other + self.tensor
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __iadd__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            self.tensor += other.tensor
+        else:
+            self.tensor += other
+        return self
+
+    def __sub__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            return ParityTensor(
+                edges=self.edges,
+                tensor=self.tensor - other.tensor,
+            )
+        result = self.tensor - other
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __rsub__(self, other: typing.Any) -> ParityTensor:
+        result = other - self.tensor
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __isub__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            self.tensor -= other.tensor
+        else:
+            self.tensor -= other
+        return self
+
+    def __mul__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            return ParityTensor(
+                edges=self.edges,
+                tensor=self.tensor * other.tensor,
+            )
+        result = self.tensor * other
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __rmul__(self, other: typing.Any) -> ParityTensor:
+        result = other * self.tensor
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __imul__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            self.tensor *= other.tensor
+        else:
+            self.tensor *= other
+        return self
+
+    def __truediv__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            return ParityTensor(
+                edges=self.edges,
+                tensor=self.tensor / other.tensor,
+            )
+        result = self.tensor / other
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __rtruediv__(self, other: typing.Any) -> ParityTensor:
+        result = other / self.tensor
+        if isinstance(result, torch.Tensor):
+            return ParityTensor(
+                edges=self.edges,
+                tensor=result,
+            )
+        return NotImplemented
+
+    def __itruediv__(self, other: typing.Any) -> ParityTensor:
+        if isinstance(other, ParityTensor):
+            self._validate_edge_compatibility(other)
+            self.tensor /= other.tensor
+        else:
+            self.tensor /= other
+        return self
