@@ -19,10 +19,18 @@ class ParityTensor:
     Each dimension of the tensor is composed of an even and an odd part, represented as a pair of integers.
     """
 
+    _arrow: tuple[bool, ...]
     _edges: tuple[tuple[int, int], ...]
     _tensor: torch.Tensor
     _parity: tuple[torch.Tensor, ...] | None = None
     _mask: torch.Tensor | None = None
+
+    @property
+    def arrow(self) -> tuple[bool, ...]:
+        """
+        The arrow of the tensor, represented as a tuple of booleans indicating the order of the fermion operators.
+        """
+        return self._arrow
 
     @property
     def edges(self) -> tuple[tuple[int, int], ...]:
@@ -80,6 +88,7 @@ class ParityTensor:
         """
         assert set(before_by_after) == set(range(self.tensor.dim())), "Permutation indices must cover all dimensions."
 
+        arrow = tuple(self.arrow[i] for i in before_by_after)
         edges = tuple(self.edges[i] for i in before_by_after)
         tensor = self.tensor.permute(before_by_after)
         parity = tuple(self.parity[i] for i in before_by_after)
@@ -98,6 +107,7 @@ class ParityTensor:
 
         return dataclasses.replace(
             self,
+            _arrow=arrow,
             _edges=edges,
             _tensor=tensor,
             _parity=parity,
@@ -105,6 +115,7 @@ class ParityTensor:
         )
 
     def __post_init__(self) -> None:
+        assert len(self._arrow) == self._tensor.dim(), f"Arrow length ({len(self._arrow)}) must match tensor dimensions ({self._tensor.dim()})."
         assert len(self._edges) == self._tensor.dim(), f"Edges length ({len(self._edges)}) must match tensor dimensions ({self._tensor.dim()})."
         for dim, (even, odd) in zip(self._tensor.shape, self._edges):
             assert even >= 0 and odd >= 0 and dim == even + odd, f"Dimension {dim} must equal sum of even ({even}) and odd ({odd}) parts, and both must be non-negative."
@@ -126,6 +137,7 @@ class ParityTensor:
         """
         Validate that the edges of two ParityTensor instances are compatible for arithmetic operations.
         """
+        assert self._arrow == other.arrow, f"Arrows must match for arithmetic operations. Got {self._arrow} and {other.arrow}."
         assert self._edges == other.edges, f"Edges must match for arithmetic operations. Got {self._edges} and {other.edges}."
 
     def __pos__(self) -> ParityTensor:
