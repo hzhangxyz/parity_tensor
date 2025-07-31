@@ -34,10 +34,14 @@ column_limit = 200
 
 [tool.pylint]
 max-line-length = 200
-ignore-paths = ["parity_tensor/_version.py"]
+ignore-paths = [
+  "parity_tensor/_version.py",
+  "tests/*",
+]
 
 [tool.mypy]
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
+exclude = [ "tests/*" ]
