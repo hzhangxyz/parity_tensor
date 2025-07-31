@@ -143,6 +143,32 @@ class ParityTensor:
             _mask=mask,
         )
 
+    def reverse(self, indices: tuple[int, ...]) -> ParityTensor:
+        """
+        Reverse the specified indices of the parity tensor.
+
+        A single sign is generated during reverse, which should be applied to one of the connected two tensors.
+        This package always applies it to the tensor with arrow as True.
+        """
+        assert len(set(indices)) == len(indices), f"Indices must be unique. Got {indices}."
+        assert all(0 <= i < self.tensor.dim() for i in indices), f"Indices must be within tensor dimensions. Got {indices}."
+
+        arrow = tuple(self.arrow[i] ^ i in indices for i in range(self.tensor.dim()))
+        tensor = self.tensor
+
+        total_parity = functools.reduce(
+            torch.logical_xor,
+            (self._unsqueeze(parity, index, self.tensor.dim()) for index, parity in enumerate(self.parity) if index in indices and self.arrow[index]),
+            torch.zeros([], dtype=torch.bool, device=self.tensor.device),
+        )
+        tensor = torch.where(total_parity, -tensor, +tensor)
+
+        return dataclasses.replace(
+            self,
+            _arrow=arrow,
+            _tensor=tensor,
+        )
+
     def __post_init__(self) -> None:
         assert len(self._arrow) == self._tensor.dim(), f"Arrow length ({len(self._arrow)}) must match tensor dimensions ({self._tensor.dim()})."
         assert len(self._edges) == self._tensor.dim(), f"Edges length ({len(self._edges)}) must match tensor dimensions ({self._tensor.dim()})."
