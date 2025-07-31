@@ -64,16 +64,45 @@ class ParityTensor:
             self._mask = self._tensor_mask()
         return self._mask
 
-    def to(self, device: torch.device) -> ParityTensor:
+    def to(self, whatever: torch.device | torch.dtype | str | None = None, *, device: torch.device | None = None, dtype: torch.dtype | None = None) -> ParityTensor:
         """
-        Copy the tensor to a specified device.
+        Copy the tensor to a specified device or copy it to a specified data type.
         """
-        return dataclasses.replace(
-            self,
-            _tensor=self._tensor.to(device),
-            _parity=tuple(p.to(device) for p in self._parity) if self._parity is not None else None,
-            _mask=self._mask.to(device) if self._mask is not None else None,
-        )
+        if whatever is None:
+            pass
+        elif isinstance(whatever, torch.device):
+            assert device is None, "Duplicate device specification."
+            device = whatever
+        elif isinstance(whatever, torch.dtype):
+            assert dtype is None, "Duplicate dtype specification."
+            dtype = whatever
+        elif isinstance(whatever, str):
+            assert device is None, "Duplicate device specification."
+            device = torch.device(whatever)
+        else:
+            raise TypeError(f"Unsupported type for 'to': {type(whatever)}. Expected torch.device, torch.dtype, or str.")
+        match (device, dtype):
+            case (None, None):
+                return self
+            case (None, _):
+                return dataclasses.replace(
+                    self,
+                    _tensor=self._tensor.to(dtype=dtype),
+                )
+            case (_, None):
+                return dataclasses.replace(
+                    self,
+                    _tensor=self._tensor.to(device=device),
+                    _parity=tuple(p.to(device) for p in self._parity) if self._parity is not None else None,
+                    _mask=self._mask.to(device) if self._mask is not None else None,
+                )
+            case _:
+                return dataclasses.replace(
+                    self,
+                    _tensor=self._tensor.to(device=device, dtype=dtype),
+                    _parity=tuple(p.to(device=device) for p in self._parity) if self._parity is not None else None,
+                    _mask=self._mask.to(device=device) if self._mask is not None else None,
+                )
 
     def update_mask(self) -> ParityTensor:
         """
