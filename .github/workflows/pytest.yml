@@ -1,11 +1,11 @@
-name: Pre-commit hooks
+name: Run pytest
 
 on:
-  - push
   - pull_request
+  - push
 
 jobs:
-  pre-commit:
+  pytest:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,4 +19,9 @@ jobs:
       - name: Install dependencies
         run: pip install '.[dev]'
 
-      - uses: pre-commit/action@v3.0.1
+      - name: Run pytest
+        run: pytest --cov=parity_tensor --cov-branch --cov-report=xml
+
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
