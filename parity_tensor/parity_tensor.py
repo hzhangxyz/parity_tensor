@@ -60,8 +60,8 @@ class ParityTensor:
         """
         Copy the tensor to a specified device.
         """
-        return ParityTensor(
-            _edges=self._edges,
+        return dataclasses.replace(
+            self,
             _tensor=self._tensor.to(device),
             _parity=tuple(p.to(device) for p in self._parity) if self._parity is not None else None,
             _mask=self._mask.to(device) if self._mask is not None else None,
@@ -96,7 +96,8 @@ class ParityTensor:
         )
         tensor = torch.where(total_parity, -tensor, +tensor)
 
-        return ParityTensor(
+        return dataclasses.replace(
+            self,
             _edges=edges,
             _tensor=tensor,
             _parity=parity,
@@ -128,40 +129,32 @@ class ParityTensor:
         assert self._edges == other.edges, f"Edges must match for arithmetic operations. Got {self._edges} and {other.edges}."
 
     def __pos__(self) -> ParityTensor:
-        return ParityTensor(
-            _edges=self._edges,
+        return dataclasses.replace(
+            self,
             _tensor=+self._tensor,
-            _parity=self._parity,
-            _mask=self._mask,
         )
 
     def __neg__(self) -> ParityTensor:
-        return ParityTensor(
-            _edges=self._edges,
+        return dataclasses.replace(
+            self,
             _tensor=-self._tensor,
-            _parity=self._parity,
-            _mask=self._mask,
         )
 
     def __add__(self, other: typing.Any) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=self._tensor + other._tensor,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         try:
             result = self._tensor + other
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -171,11 +164,9 @@ class ParityTensor:
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -190,22 +181,18 @@ class ParityTensor:
     def __sub__(self, other: typing.Any) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=self._tensor - other._tensor,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         try:
             result = self._tensor - other
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -215,11 +202,9 @@ class ParityTensor:
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -234,22 +219,18 @@ class ParityTensor:
     def __mul__(self, other: typing.Any) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=self._tensor * other._tensor,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         try:
             result = self._tensor * other
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -259,11 +240,9 @@ class ParityTensor:
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -278,22 +257,18 @@ class ParityTensor:
     def __truediv__(self, other: typing.Any) -> ParityTensor:
         if isinstance(other, ParityTensor):
             self._validate_edge_compatibility(other)
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=self._tensor / other._tensor,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         try:
             result = self._tensor / other
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
@@ -303,11 +278,9 @@ class ParityTensor:
         except TypeError:
             return NotImplemented
         if isinstance(result, torch.Tensor):
-            return ParityTensor(
-                _edges=self._edges,
+            return dataclasses.replace(
+                self,
                 _tensor=result,
-                _parity=self._parity,
-                _mask=self._mask,
             )
         return NotImplemented
 
