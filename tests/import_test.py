@@ -1,2 +1,3 @@
 def test_import() -> None:
-    import parity_tensor
+    from parity_tensor import ParityTensor
+    assert isinstance(ParityTensor, type)
