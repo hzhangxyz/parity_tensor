@@ -126,7 +126,7 @@ class ParityTensor:
         total_parity = functools.reduce(
             torch.logical_xor,
             (
-                torch.logical_and(parity[i], parity[j])
+                torch.logical_and(self._unsqueeze(parity[i], i, self.tensor.dim()), self._unsqueeze(parity[j], j, self.tensor.dim()))
                 for j in range(self.tensor.dim())
                 for i in range(0, j)  # all 0 <= i < j < dim
                 if before_by_after[i] > before_by_after[j]),
@@ -149,7 +149,7 @@ class ParityTensor:
         for dim, (even, odd) in zip(self._tensor.shape, self._edges):
             assert even >= 0 and odd >= 0 and dim == even + odd, f"Dimension {dim} must equal sum of even ({even}) and odd ({odd}) parts, and both must be non-negative."
 
-    def _unqueeze(self, tensor: torch.Tensor, index: int, dim: int) -> torch.Tensor:
+    def _unsqueeze(self, tensor: torch.Tensor, index: int, dim: int) -> torch.Tensor:
         return tensor.view([-1 if i == index else 1 for i in range(dim)])
 
     def _edge_mask(self, even: int, odd: int) -> torch.Tensor:
@@ -158,7 +158,7 @@ class ParityTensor:
     def _tensor_mask(self) -> torch.Tensor:
         return functools.reduce(
             torch.logical_xor,
-            (self._unqueeze(parity, index, self._tensor.dim()) for index, parity in enumerate(self.parity)),
+            (self._unsqueeze(parity, index, self._tensor.dim()) for index, parity in enumerate(self.parity)),
             torch.ones_like(self._tensor, dtype=torch.bool),
         )
 
