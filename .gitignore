@@ -5,3 +5,5 @@ parity_tensor/_version.py
 build
 .idea
 .venv
+.coverage
+coverage.xml
