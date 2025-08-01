@@ -1,0 +1,88 @@
+import torch
+import pytest
+from grassmann_tensor import GrassmannTensor
+
+
+@pytest.fixture(params=[
+    (
+        GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4])),
+        GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4])),
+    ),
+    (
+        GrassmannTensor((True, False, True), ((1, 1), (2, 2), (3, 1)), torch.randn([2, 4, 4])),
+        GrassmannTensor((True, False, True), ((1, 1), (2, 2), (3, 1)), torch.randn([2, 4, 4])),
+    ),
+    (
+        GrassmannTensor((True, True, False, False), ((1, 2), (2, 2), (1, 1), (3, 1)), torch.randn([3, 4, 2, 4])),
+        GrassmannTensor((True, True, False, False), ((1, 2), (2, 2), (1, 1), (3, 1)), torch.randn([3, 4, 2, 4])),
+    ),
+])
+def tensors(request: pytest.FixtureRequest) -> tuple[GrassmannTensor, GrassmannTensor]:
+    return request.param
+
+
+@pytest.fixture()
+def scalar() -> torch.Tensor:
+    return torch.randn([])
+
+
+def test_arithmetic(tensors: tuple[GrassmannTensor, GrassmannTensor], scalar: torch.Tensor) -> None:
+    tensor_a, tensor_b = tensors
+
+    # Test __pos__ method.
+    assert torch.equal((+tensor_a).tensor, +tensor_a.tensor)
+
+    # Test __neg__ method.
+    assert torch.equal((-tensor_a).tensor, -tensor_a.tensor)
+
+    # Test __add__ method.
+    assert torch.equal((tensor_a + scalar).tensor, tensor_a.tensor + scalar)
+    assert torch.equal((tensor_a + tensor_b).tensor, tensor_a.tensor + tensor_b.tensor)
+    assert torch.equal((scalar + tensor_a).tensor, scalar + tensor_a.tensor)
+
+    # Test __iadd__ method.
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c += scalar
+    assert torch.equal(tensor_c.tensor, tensor_a.tensor + scalar)
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c += tensor_b
+    assert torch.equal(tensor_c.tensor, tensor_a.tensor + tensor_b.tensor)
+
+    # Test __sub__ method.
+    assert torch.equal((tensor_a - scalar).tensor, tensor_a.tensor - scalar)
+    assert torch.equal((tensor_a - tensor_b).tensor, tensor_a.tensor - tensor_b.tensor)
+    assert torch.equal((scalar - tensor_a).tensor, scalar - tensor_a.tensor)
+
+    # Test __isub__ method.
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c -= scalar
+    assert torch.equal(tensor_c.tensor, tensor_a.tensor - scalar)
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c -= tensor_b
+    assert torch.equal(tensor_c.tensor, tensor_a.tensor - tensor_b.tensor)
+
+    # Test __mul__ method.
+    assert torch.allclose((tensor_a * scalar).tensor, tensor_a.tensor * scalar)
+    assert torch.allclose((tensor_a * tensor_b).tensor, tensor_a.tensor * tensor_b.tensor)
+    assert torch.allclose((scalar * tensor_a).tensor, scalar * tensor_a.tensor)
+
+    # Test __imul__ method.
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c *= scalar
+    assert torch.allclose(tensor_c.tensor, tensor_a.tensor * scalar)
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c *= tensor_b
+    assert torch.allclose(tensor_c.tensor, tensor_a.tensor * tensor_b.tensor)
+
+    # Test __truediv__ method.
+    assert torch.allclose((tensor_a / scalar).tensor, tensor_a.tensor / scalar)
+    assert torch.allclose((tensor_a / tensor_b).tensor, tensor_a.tensor / tensor_b.tensor)
+    assert torch.allclose((scalar / tensor_a).tensor, scalar / tensor_a.tensor)
+
+    # Test __itruediv__ method.
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c /= scalar
+    assert torch.allclose(tensor_c.tensor, tensor_a.tensor / scalar)
+    tensor_c = GrassmannTensor(tensor_a.arrow, tensor_a.edges, tensor_a.tensor.clone())
+    tensor_c /= tensor_b
+    assert torch.allclose(tensor_c.tensor, tensor_a.tensor / tensor_b.tensor)
