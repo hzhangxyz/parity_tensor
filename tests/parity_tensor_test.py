@@ -24,61 +24,84 @@ def permute_tuple_fixture(request: pytest.FixtureRequest) -> Tuple[int, int]:
 
 def test_arithmetic(parity_instance_fx: ParityTensor) -> None:
     """Test the arithmetic operators on ParityTensor."""
+    instance = ParityTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4]))
     # Test __pos__ method.
     print("-" * 5, "Test __pos__ method", "-" * 5)
     print(parity_instance_fx)
     print(+parity_instance_fx)
+
     # Test __neg__ method.
     print("-" * 5, "Test __neg__ method", "-" * 5)
     print(parity_instance_fx)
     print(-parity_instance_fx)
+
     # Test __add__ method.
     print("-" * 5, "Test __add__ method", "-" * 5)
     print(parity_instance_fx)
     print(parity_instance_fx + 1)
+    print(parity_instance_fx + instance)
+
     # Test __radd__ method.
     print("-" * 5, "Test __radd__ method", "-" * 5)
     print(parity_instance_fx)
     print(1 + parity_instance_fx)
+    print(instance + parity_instance_fx)
+
     # Test __iadd__ method.
     print("-" * 5, "Test __iadd__ method", "-" * 5)
     print(parity_instance_fx)
     parity_instance_fx += 1
     print(parity_instance_fx)
+    parity_instance_fx += instance
+    print(parity_instance_fx)
+
     # Test __sub__ method.
     print("-" * 5, "Test __sub__ method", "-" * 5)
     print(parity_instance_fx)
     print(parity_instance_fx - 1)
+    print(parity_instance_fx - instance)
+
     # Test __rsub__ method.
     print("-" * 5, "Test __rsub__ method", "-" * 5)
     print(parity_instance_fx)
     print(1 - parity_instance_fx)
+    print(instance - parity_instance_fx)
+
     # Test __isub__ method.
     print("-" * 5, "Test __isub__ method", "-" * 5)
     print(parity_instance_fx)
     parity_instance_fx -= 1
     print(parity_instance_fx)
+    parity_instance_fx -= instance
+    print(parity_instance_fx)
+
     # Test __mul__ method.
     print("-" * 5, "Test __mul__ method", "-" * 5)
     print(parity_instance_fx)
     print(parity_instance_fx * 2)
+
     # Test __rmul__ method.
     print("-" * 5, "Test __rmul__ method", "-" * 5)
     print(parity_instance_fx)
     print(2 * parity_instance_fx)
+
     # Test __imul__ method.
     print("-" * 5, "Test __imul__ method", "-" * 5)
     print(parity_instance_fx)
     parity_instance_fx *= 2
     print(parity_instance_fx)
+
     # Test __truediv__ method.
     print("-" * 5, "Test __truediv__ method", "-" * 5)
     print(parity_instance_fx)
     print(parity_instance_fx / 2)
+    print(parity_instance_fx / instance)
+
     # Test __rtruediv__ method.
     print("-" * 5, "Test __rtruediv__ method", "-" * 5)
     print(parity_instance_fx)
     print(2 / parity_instance_fx)
+
     # Test __itruediv__ method.
     print("-" * 5, "Test __itruediv__ method", "-" * 5)
     print(parity_instance_fx)
