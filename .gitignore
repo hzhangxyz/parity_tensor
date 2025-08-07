@@ -1,7 +1,7 @@
 env
 *.egg-info
 __pycache__
-parity_tensor/_version.py
+grassmann/_version.py
 build
 .coverage
 coverage.xml

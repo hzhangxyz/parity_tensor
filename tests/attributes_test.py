@@ -1,7 +1,7 @@
 import typing
 import pytest
 import torch
-from parity_tensor import ParityTensor
+from grassmann import ParityTensor
 
 Initialization = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tensor]
 

@@ -1,7 +1,7 @@
 import typing
 import pytest
 import torch
-from parity_tensor import ParityTensor
+from grassmann import ParityTensor
 
 
 @pytest.fixture()
