@@ -1,8 +1,8 @@
 """
-A parity tensor package.
+A Grassmann algebra tensor package.
 """
 
-__all__ = ["__version__", "ParityTensor"]
+__all__ = ["__version__", "GrassmannTensor"]
 
 from .version import __version__
-from .tensor import ParityTensor
+from .tensor import GrassmannTensor

@@ -10,7 +10,7 @@ dependencies = [
 ]
 requires-python = ">=3"
 authors = [{ email = "hzhangxyz@outlook.com", name = "Hao Zhang" }]
-description = "A parity tensor package"
+description = "A Grassmann algebra tensor package"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 

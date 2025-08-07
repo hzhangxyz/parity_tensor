@@ -1,19 +1,19 @@
 import typing
 import pytest
 import torch
-from grassmann_tensor import ParityTensor
+from grassmann_tensor import GrassmannTensor
 
 
 @pytest.fixture()
-def x() -> ParityTensor:
-    return ParityTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4]))
+def x() -> GrassmannTensor:
+    return GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4]))
 
 
 @pytest.mark.parametrize("dtype_arg", ["position", "keyword", "none"])
 @pytest.mark.parametrize("device_arg", ["position", "keyword", "none"])
 @pytest.mark.parametrize("device_format", ["object", "string"])
 def test_conversion(
-    x: ParityTensor,
+    x: GrassmannTensor,
     dtype_arg: typing.Literal["position", "keyword", "none"],
     device_arg: typing.Literal["position", "keyword", "none"],
     device_format: typing.Literal["object", "string"],
@@ -42,12 +42,12 @@ def test_conversion(
         y = x.to(*args, **kwargs)
 
 
-def test_conversion_invalid_type(x: ParityTensor) -> None:
+def test_conversion_invalid_type(x: GrassmannTensor) -> None:
     with pytest.raises(TypeError):
         x.to(2333)  # type: ignore[arg-type]
 
 
-def test_conversion_duplicated_value(x: ParityTensor) -> None:
+def test_conversion_duplicated_value(x: GrassmannTensor) -> None:
     with pytest.raises(AssertionError):
         x.to(torch.device("cpu"), device=torch.device("cpu"))
     with pytest.raises(AssertionError):

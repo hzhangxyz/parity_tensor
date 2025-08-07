@@ -1,5 +1,5 @@
 """
-Version information for the parity tensor package.
+Version information for the Grassmann tensor package.
 """
 
 __all__ = [
