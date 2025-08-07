@@ -143,9 +143,9 @@ class GrassmannTensor:
             _mask=mask,
         )
 
-    def reverse(self, indices: tuple[int, ...]) -> ParityTensor:
+    def reverse(self, indices: tuple[int, ...]) -> GrassmannTensor:
         """
-        Reverse the specified indices of the parity tensor.
+        Reverse the specified indices of the Grassmann tensor.
 
         A single sign is generated during reverse, which should be applied to one of the connected two tensors.
         This package always applies it to the tensor with arrow as True.
