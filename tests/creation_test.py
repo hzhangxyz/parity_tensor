@@ -1,6 +1,6 @@
 import pytest
 import torch
-from parity_tensor import ParityTensor
+from grassmann_tensor import ParityTensor
 
 
 def test_creation() -> None:
