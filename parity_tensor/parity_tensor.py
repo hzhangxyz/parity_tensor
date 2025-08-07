@@ -108,7 +108,7 @@ class ParityTensor:
         """
         Update the mask of the tensor based on its parity.
         """
-        self._tensor = torch.where(self.mask, self._tensor, 0)
+        self._tensor = torch.where(self.mask, 0, self._tensor)
         return self
 
     def permute(self, before_by_after: tuple[int, ...]) -> ParityTensor:
@@ -159,7 +159,7 @@ class ParityTensor:
         return functools.reduce(
             torch.logical_xor,
             (self._unsqueeze(parity, index, self._tensor.dim()) for index, parity in enumerate(self.parity)),
-            torch.ones_like(self._tensor, dtype=torch.bool),
+            torch.zeros_like(self._tensor, dtype=torch.bool),
         )
 
     def _validate_edge_compatibility(self, other: ParityTensor) -> None:

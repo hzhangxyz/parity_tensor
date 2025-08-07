@@ -52,7 +52,7 @@ def test_mask(x: Initialization) -> None:
     assert tensor.mask.dtype == torch.bool
     for indices in zip(*torch.unravel_index(torch.arange(tensor.tensor.numel()), tensor.tensor.shape)):
         mask = tensor.mask[indices]
-        expect = True
+        expect = False
         for rank, parity in enumerate(tensor.parity):
             expect ^= bool(parity[indices[rank]])
         assert mask == expect
