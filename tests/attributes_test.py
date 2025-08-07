@@ -1,7 +1,7 @@
 import typing
 import pytest
 import torch
-from parity_tensor import ParityTensor
+from grassmann_tensor import GrassmannTensor
 
 Initialization = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tensor]
 
@@ -21,22 +21,22 @@ def x(request: typing.Any) -> Initialization:
 
 
 def test_arrow(x: Initialization) -> None:
-    tensor = ParityTensor(*x)
+    tensor = GrassmannTensor(*x)
     assert tensor.arrow == x[0]
 
 
 def test_edges(x: Initialization) -> None:
-    tensor = ParityTensor(*x)
+    tensor = GrassmannTensor(*x)
     assert tensor.edges == x[1]
 
 
 def test_tensor(x: Initialization) -> None:
-    tensor = ParityTensor(*x)
+    tensor = GrassmannTensor(*x)
     assert torch.equal(tensor.tensor, x[2])
 
 
 def test_parity(x: Initialization) -> None:
-    tensor = ParityTensor(*x)
+    tensor = GrassmannTensor(*x)
     assert len(tensor.parity) == tensor.tensor.dim()
     for [even, odd], parity in zip(x[1], tensor.parity):
         total = even + odd
@@ -47,7 +47,7 @@ def test_parity(x: Initialization) -> None:
 
 
 def test_mask(x: Initialization) -> None:
-    tensor = ParityTensor(*x)
+    tensor = GrassmannTensor(*x)
     assert tensor.mask.shape == tensor.tensor.shape
     assert tensor.mask.dtype == torch.bool
     for indices in zip(*torch.unravel_index(torch.arange(tensor.tensor.numel()), tensor.tensor.shape)):

@@ -20,7 +20,7 @@ jobs:
         run: pip install '.[dev]'
 
       - name: Run pytest
-        run: pytest --cov=parity_tensor --cov-branch --cov-report=xml
+        run: pytest --cov=grassmann_tensor --cov-branch --cov-report=xml
 
       - uses: codecov/codecov-action@v5
         with:
