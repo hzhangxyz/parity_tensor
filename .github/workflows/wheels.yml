@@ -38,7 +38,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/project/parity_tensor/
+      url: https://pypi.org/project/grassmann_tensor/
     permissions:
       id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')

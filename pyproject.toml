@@ -3,14 +3,14 @@ requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "parity_tensor"
+name = "grassmann-tensor"
 dynamic = ["version"]
 dependencies = [
   "torch",
 ]
 requires-python = ">=3"
 authors = [{ email = "hzhangxyz@outlook.com", name = "Hao Zhang" }]
-description = "A parity tensor package"
+description = "A Grassmann algebra tensor package"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 
@@ -24,7 +24,7 @@ dev = [
 ]
 
 [tool.setuptools_scm]
-version_file = "parity_tensor/_version.py"
+version_file = "grassmann_tensor/_version.py"
 version_scheme = "no-guess-dev"
 fallback_version = "0.0.0"
 
@@ -35,7 +35,7 @@ column_limit = 200
 [tool.pylint]
 max-line-length = 200
 ignore-paths = [
-  "parity_tensor/_version.py",
+  "grassmann_tensor/_version.py",
   "tests/*",
 ]
 

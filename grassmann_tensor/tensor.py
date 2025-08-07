@@ -1,10 +1,10 @@
 """
-A parity tensor class.
+A Grassmann tensor class.
 """
 
 from __future__ import annotations
 
-__all__ = ["ParityTensor"]
+__all__ = ["GrassmannTensor"]
 
 import dataclasses
 import functools
@@ -13,9 +13,9 @@ import torch
 
 
 @dataclasses.dataclass
-class ParityTensor:
+class GrassmannTensor:
     """
-    A parity tensor class, which stores a tensor along with information about its edges.
+    A Grassmann tensor class, which stores a tensor along with information about its edges.
     Each dimension of the tensor is composed of an even and an odd part, represented as a pair of integers.
     """
 
@@ -64,7 +64,7 @@ class ParityTensor:
             self._mask = self._tensor_mask()
         return self._mask
 
-    def to(self, whatever: torch.device | torch.dtype | str | None = None, *, device: torch.device | None = None, dtype: torch.dtype | None = None) -> ParityTensor:
+    def to(self, whatever: torch.device | torch.dtype | str | None = None, *, device: torch.device | None = None, dtype: torch.dtype | None = None) -> GrassmannTensor:
         """
         Copy the tensor to a specified device or copy it to a specified data type.
         """
@@ -104,16 +104,16 @@ class ParityTensor:
                     _mask=self._mask.to(device=device) if self._mask is not None else None,
                 )
 
-    def update_mask(self) -> ParityTensor:
+    def update_mask(self) -> GrassmannTensor:
         """
         Update the mask of the tensor based on its parity.
         """
         self._tensor = torch.where(self.mask, 0, self._tensor)
         return self
 
-    def permute(self, before_by_after: tuple[int, ...]) -> ParityTensor:
+    def permute(self, before_by_after: tuple[int, ...]) -> GrassmannTensor:
         """
-        Permute the indices of the parity tensor.
+        Permute the indices of the Grassmann tensor.
         """
         assert set(before_by_after) == set(range(self.tensor.dim())), "Permutation indices must cover all dimensions."
 
@@ -162,27 +162,27 @@ class ParityTensor:
             torch.zeros_like(self._tensor, dtype=torch.bool),
         )
 
-    def _validate_edge_compatibility(self, other: ParityTensor) -> None:
+    def _validate_edge_compatibility(self, other: GrassmannTensor) -> None:
         """
         Validate that the edges of two ParityTensor instances are compatible for arithmetic operations.
         """
         assert self._arrow == other.arrow, f"Arrows must match for arithmetic operations. Got {self._arrow} and {other.arrow}."
         assert self._edges == other.edges, f"Edges must match for arithmetic operations. Got {self._edges} and {other.edges}."
 
-    def __pos__(self) -> ParityTensor:
+    def __pos__(self) -> GrassmannTensor:
         return dataclasses.replace(
             self,
             _tensor=+self._tensor,
         )
 
-    def __neg__(self) -> ParityTensor:
+    def __neg__(self) -> GrassmannTensor:
         return dataclasses.replace(
             self,
             _tensor=-self._tensor,
         )
 
-    def __add__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __add__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             return dataclasses.replace(
                 self,
@@ -199,7 +199,7 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __radd__(self, other: typing.Any) -> ParityTensor:
+    def __radd__(self, other: typing.Any) -> GrassmannTensor:
         try:
             result = other + self._tensor
         except TypeError:
@@ -211,16 +211,16 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __iadd__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __iadd__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor += other._tensor
         else:
             self._tensor += other
         return self
 
-    def __sub__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __sub__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             return dataclasses.replace(
                 self,
@@ -237,7 +237,7 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __rsub__(self, other: typing.Any) -> ParityTensor:
+    def __rsub__(self, other: typing.Any) -> GrassmannTensor:
         try:
             result = other - self._tensor
         except TypeError:
@@ -249,16 +249,16 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __isub__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __isub__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor -= other._tensor
         else:
             self._tensor -= other
         return self
 
-    def __mul__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __mul__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             return dataclasses.replace(
                 self,
@@ -275,7 +275,7 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __rmul__(self, other: typing.Any) -> ParityTensor:
+    def __rmul__(self, other: typing.Any) -> GrassmannTensor:
         try:
             result = other * self._tensor
         except TypeError:
@@ -287,16 +287,16 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __imul__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __imul__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor *= other._tensor
         else:
             self._tensor *= other
         return self
 
-    def __truediv__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __truediv__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             return dataclasses.replace(
                 self,
@@ -313,7 +313,7 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __rtruediv__(self, other: typing.Any) -> ParityTensor:
+    def __rtruediv__(self, other: typing.Any) -> GrassmannTensor:
         try:
             result = other / self._tensor
         except TypeError:
@@ -325,8 +325,8 @@ class ParityTensor:
             )
         return NotImplemented
 
-    def __itruediv__(self, other: typing.Any) -> ParityTensor:
-        if isinstance(other, ParityTensor):
+    def __itruediv__(self, other: typing.Any) -> GrassmannTensor:
+        if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor /= other._tensor
         else:
