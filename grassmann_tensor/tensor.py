@@ -253,7 +253,7 @@ class GrassmannTensor:
                         assert self_total < total, f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
                     even, odd, reorder, sign = self._reorder_indices(self.edges[cursor_self:new_cursor_self])
                     if isinstance(new_shape[cursor_plan], tuple):
-                        assert new_shape[cursor_plan][0] == even and new_shape[cursor_plan][1] == odd, f"New even and odd number dismatch during merging {self.edegs} to {new_shape}."
+                        assert new_shape[cursor_plan][0] == even and new_shape[cursor_plan][1] == odd, f"New even and odd number mismatch during merging {self.edges} to {new_shape}."
                     arrow.append(self.arrow[cursor_self])
                     assert all(
                         self_arrow == arrow[-1] for self_arrow in self.arrow[cursor_self:new_cursor_self]), f"Cannot merge edges with different arrows {self.arrow[cursor_self:new_cursor_self]}."
