@@ -1,4 +1,3 @@
-import typing
 import pytest
 import torch
 from grassmann_tensor import GrassmannTensor
@@ -16,7 +15,7 @@ Initialization = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tens
     ((), (), torch.randn([])),
     ((False, False, True), ((2, 2), (1, 3), (4, 0)), torch.randn([4, 4, 4])),
 ])
-def x(request: typing.Any) -> Initialization:
+def x(request: pytest.FixtureRequest) -> Initialization:
     return request.param
 
 
