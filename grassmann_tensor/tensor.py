@@ -277,7 +277,7 @@ class GrassmannTensor:
                             break
                         assert plan_total < self.shape(cursor_self), f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
                     even, odd, reorder, sign = self._reorder_indices(new_shape[cursor_plan:new_cursor_plan])
-                    assert (even, odd) == self.edges[cursor_self], f"New even and odd number dismatch during splitting {self.edges[cursor_self]} to {new_shape[cursor_plan:new_cursor_plan]}."
+                    assert (even, odd) == self.edges[cursor_self], f"New even and odd number mismatch during splitting {self.edges[cursor_self]} to {new_shape[cursor_plan:new_cursor_plan]}."
                     for i in range(cursor_plan, new_cursor_plan):
                         arrow.append(self.arrow[cursor_self])
                         edges.append(new_shape[i])
