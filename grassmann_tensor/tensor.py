@@ -358,3 +358,20 @@ class GrassmannTensor:
         else:
             self._tensor /= other
         return self
+
+    def clone(self) -> GrassmannTensor:
+        """
+        Create a deep copy of the Grassmann tensor.
+        """
+        return dataclasses.replace(
+            self,
+            _tensor=self._tensor.clone(),
+            _parity=tuple(parity.clone() for parity in self._parity) if self._parity is not None else None,
+            _mask=self._mask.clone() if self._mask is not None else None,
+        )
+
+    def __copy__(self) -> GrassmannTensor:
+        return self.clone()
+
+    def __deepcopy__(self, memo: dict) -> GrassmannTensor:
+        return self.clone()
