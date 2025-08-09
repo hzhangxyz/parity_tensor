@@ -294,7 +294,8 @@ class GrassmannTensor:
         tensor = self.tensor
 
         for index, reorder in splitting_reorder:
-            inverse_reorder = torch.zeros_like(reorder).scatter_(0, reorder, torch.arange(reorder.size(0), device=reorder.device))
+            inverse_reorder = torch.empty_like(reorder)
+            inverse_reorder[reorder] = torch.arange(reorder.size(0), device=reorder.device)
             tensor = tensor.index_select(index, inverse_reorder)
 
         splitting_parity = functools.reduce(
