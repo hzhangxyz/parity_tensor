@@ -22,12 +22,15 @@ def tensors(request: pytest.FixtureRequest) -> tuple[GrassmannTensor, GrassmannT
     return request.param
 
 
-@pytest.fixture()
-def scalar() -> torch.Tensor:
-    return torch.randn([])
+@pytest.fixture(params=[
+    torch.randn([]),
+    torch.randn([]).item(),
+])
+def scalar(request: pytest.FixtureRequest) -> torch.Tensor | float:
+    return request.param
 
 
-BAD_TYPES = [
+UNSUPPORTED_TYPES = [
     "string",  #string
     None,  #NoneType
     {"key", "value"},  #dict
@@ -37,8 +40,8 @@ BAD_TYPES = [
 ]
 
 
-@pytest.mark.parametrize("unsupported_type", BAD_TYPES)
-def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor, GrassmannTensor], scalar: torch.Tensor) -> None:
+@pytest.mark.parametrize("unsupported_type", UNSUPPORTED_TYPES)
+def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor, GrassmannTensor], scalar: torch.Tensor | float) -> None:
     tensor_a, tensor_b = tensors
 
     # Test __pos__ method.
