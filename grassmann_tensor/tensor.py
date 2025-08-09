@@ -209,8 +209,8 @@ class GrassmannTensor:
         # 2. Reorder the indices for splitting
         # 3. Apply the sign for splitting
         # 4. reshape the core tensor according to the new shape
-        # 5. Reorder the indices for merging
-        # 6. Apply the sign for merging
+        # 5. Apply the sign for merging
+        # 6. Reorder the indices for merging
 
         # pylint: disable=too-many-branches, too-many-locals, too-many-statements
 
@@ -292,25 +292,29 @@ class GrassmannTensor:
                 break
 
         tensor = self.tensor
+
+        for index, reorder in splitting_reorder:
+            inverse_reorder = torch.zeros_like(reorder).scatter_(0, reorder, torch.arange(reorder.size(0), device=reorder.device))
+            tensor = tensor.index_select(index, inverse_reorder)
+
         splitting_parity = functools.reduce(
             torch.logical_xor,
             (self._unsqueeze(sign, index, self.tensor.dim()) for index, sign in splitting_sign if self.arrow[index]),
             torch.zeros([], dtype=torch.bool, device=self.tensor.device),
         )
         tensor = torch.where(splitting_parity, -tensor, +tensor)
-        for index, reorder in splitting_reorder:
-            tensor = tensor.index_select(index, reorder)
 
         tensor = tensor.reshape(shape)
 
-        for index, reorder in merging_reorder:
-            tensor = tensor.index_select(index, reorder)
         merging_parity = functools.reduce(
             torch.logical_xor,
             (self._unsqueeze(sign, index, tensor.dim()) for index, sign in merging_sign if arrow[index]),
             torch.zeros([], dtype=torch.bool, device=self.tensor.device),
         )
         tensor = torch.where(merging_parity, -tensor, +tensor)
+
+        for index, reorder in merging_reorder:
+            tensor = tensor.index_select(index, reorder)
 
         return GrassmannTensor(_arrow=tuple(arrow), _edges=tuple(edges), _tensor=tensor)
 
