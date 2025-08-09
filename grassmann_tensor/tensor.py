@@ -115,6 +115,7 @@ class GrassmannTensor:
         """
         Permute the indices of the Grassmann tensor.
         """
+        assert len(before_by_after) == len(set(before_by_after)), "Permutation indices must be unique."
         assert set(before_by_after) == set(range(self.tensor.dim())), "Permutation indices must cover all dimensions."
 
         arrow = tuple(self.arrow[i] for i in before_by_after)
