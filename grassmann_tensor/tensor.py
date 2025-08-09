@@ -189,13 +189,6 @@ class GrassmannTensor:
         sign = (count & 2).to(dtype=torch.bool)
         return len(even), len(odd), reorder, sign.flatten()
 
-    def shape(self, index: int) -> int:
-        """
-        Get the shape of the Grassmann tensor at a specific index.
-        """
-        assert 0 <= index < self.tensor.dim(), f"Index {index} out of bounds for tensor with {self.tensor.dim()} dimensions."
-        return self.edges[index][0] + self.edges[index][1]
-
     def reshape(self, new_shape: tuple[int | tuple[int, int], ...]) -> GrassmannTensor:
         """
         Reshape the Grassmann tensor, which may split or merge edges.
@@ -236,17 +229,17 @@ class GrassmannTensor:
                 # Does not change
                 arrow.append(self.arrow[cursor_self])
                 edges.append(self.edges[cursor_self])
-                shape.append(self.shape(cursor_self))
+                shape.append(self.tensor.shape[cursor_self])
                 cursor_self += 1
                 cursor_plan += 1
             else:
                 total = new_shape[cursor_plan] if isinstance(new_shape[cursor_plan], int) else new_shape[cursor_plan][0] + new_shape[cursor_plan][1]
-                if total >= self.shape(cursor_self):
+                if total >= self.tensor.shape[cursor_self]:
                     # Merging
                     new_cursor_self = cursor_self
                     self_total = 1
                     while True:
-                        self_total *= self.shape(new_cursor_self)
+                        self_total *= self.tensor.shape[new_cursor_self]
                         new_cursor_self += 1
                         if self_total == total:
                             break
@@ -273,9 +266,9 @@ class GrassmannTensor:
                         assert isinstance(new_shape[new_cursor_plan], tuple), f"New shape must be a pair when splitting, got {new_shape[new_cursor_plan]}."
                         plan_total *= new_shape[new_cursor_plan][0] + new_shape[new_cursor_plan][1]
                         new_cursor_plan += 1
-                        if plan_total == self.shape(cursor_self):
+                        if plan_total == self.tensor.shape[cursor_self]:
                             break
-                        assert plan_total < self.shape(cursor_self), f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
+                        assert plan_total < self.tensor.shape[cursor_self], f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
                     even, odd, reorder, sign = self._reorder_indices(new_shape[cursor_plan:new_cursor_plan])
                     assert (even, odd) == self.edges[cursor_self], f"New even and odd number mismatch during splitting {self.edges[cursor_self]} to {new_shape[cursor_plan:new_cursor_plan]}."
                     for i in range(cursor_plan, new_cursor_plan):
