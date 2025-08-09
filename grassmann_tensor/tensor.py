@@ -212,18 +212,19 @@ class GrassmannTensor:
         # 5. Reorder the indices for merging
         # 6. Apply the sign for merging
 
-        tensor = self.tensor
-        arrow = []
-        edges = []
-        shape = []
+        # pylint: disable=too-many-branches, too-many-locals, too-many-statements
 
-        splitting_sign = []
-        splitting_reorder = []
-        merging_reorder = []
-        merging_sign = []
+        arrow: list[bool] = []
+        edges: list[tuple[int, int]] = []
+        shape: list[int] = []
 
-        cursor_plan = 0
-        cursor_self = 0
+        splitting_sign: list[tuple[int, torch.Tensor]] = []
+        splitting_reorder: list[tuple[int, torch.Tensor]] = []
+        merging_reorder: list[tuple[int, torch.Tensor]] = []
+        merging_sign: list[tuple[int, torch.Tensor]] = []
+
+        cursor_plan: int = 0
+        cursor_self: int = 0
         while True:
             if new_shape[cursor_plan] == -1:
                 # Does not change
@@ -233,7 +234,8 @@ class GrassmannTensor:
                 cursor_self += 1
                 cursor_plan += 1
             else:
-                total = new_shape[cursor_plan] if isinstance(new_shape[cursor_plan], int) else new_shape[cursor_plan][0] + new_shape[cursor_plan][1]
+                cursor_new_shape = new_shape[cursor_plan]
+                total = cursor_new_shape if isinstance(cursor_new_shape, int) else cursor_new_shape[0] + cursor_new_shape[1]
                 if total >= self.tensor.shape[cursor_self]:
                     # Merging
                     new_cursor_self = cursor_self
@@ -244,9 +246,10 @@ class GrassmannTensor:
                         if self_total == total:
                             break
                         assert self_total < total, f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
+                        assert new_cursor_self < self.tensor.dim(), f"New shape {new_shape} exceeds tensor dimensions {self.tensor.dim()}."
                     even, odd, reorder, sign = self._reorder_indices(self.edges[cursor_self:new_cursor_self])
-                    if isinstance(new_shape[cursor_plan], tuple):
-                        assert new_shape[cursor_plan][0] == even and new_shape[cursor_plan][1] == odd, f"New even and odd number mismatch during merging {self.edges} to {new_shape}."
+                    if isinstance(cursor_new_shape, tuple):
+                        assert (even, odd) == cursor_new_shape, f"New even and odd number mismatch during merging {self.edges} to {new_shape}."
                     arrow.append(self.arrow[cursor_self])
                     assert all(
                         self_arrow == arrow[-1] for self_arrow in self.arrow[cursor_self:new_cursor_self]), f"Cannot merge edges with different arrows {self.arrow[cursor_self:new_cursor_self]}."
@@ -263,26 +266,32 @@ class GrassmannTensor:
                     new_cursor_plan = cursor_plan
                     plan_total = 1
                     while True:
-                        assert isinstance(new_shape[new_cursor_plan], tuple), f"New shape must be a pair when splitting, got {new_shape[new_cursor_plan]}."
-                        plan_total *= new_shape[new_cursor_plan][0] + new_shape[new_cursor_plan][1]
+                        new_cursor_new_shape = new_shape[new_cursor_plan]
+                        assert isinstance(new_cursor_new_shape, tuple), f"New shape must be a pair when splitting, got {new_cursor_new_shape}."
+                        plan_total *= new_cursor_new_shape[0] + new_cursor_new_shape[1]
                         new_cursor_plan += 1
                         if plan_total == self.tensor.shape[cursor_self]:
                             break
                         assert plan_total < self.tensor.shape[cursor_self], f"Dimension mismatch with edges {self.edges} and new shape {new_shape}."
-                    even, odd, reorder, sign = self._reorder_indices(new_shape[cursor_plan:new_cursor_plan])
+                        assert new_cursor_plan < len(new_shape), f"New shape {new_shape} exceeds specified dimensions {len(new_shape)}."
+                    # new_shape has been verified to be tuple[int, int] in the loop
+                    even, odd, reorder, sign = self._reorder_indices(typing.cast(tuple[tuple[int, int], ...], new_shape[cursor_plan:new_cursor_plan]))
                     assert (even, odd) == self.edges[cursor_self], f"New even and odd number mismatch during splitting {self.edges[cursor_self]} to {new_shape[cursor_plan:new_cursor_plan]}."
                     for i in range(cursor_plan, new_cursor_plan):
+                        # new_shape has been verified to be tuple[int, int] in the loop
+                        new_cursor_new_shape = typing.cast(tuple[int, int], new_shape[i])
                         arrow.append(self.arrow[cursor_self])
-                        edges.append(new_shape[i])
-                        shape.append(new_shape[i][0] + new_shape[i][1])
+                        edges.append(new_cursor_new_shape)
+                        shape.append(new_cursor_new_shape[0] + new_cursor_new_shape[1])
                     splitting_reorder.append((cursor_self, reorder))
                     splitting_sign.append((cursor_self, sign))
                     cursor_self += 1
                     cursor_plan = new_cursor_plan
 
-            if cursor_plan == len(new_shape):
+            if cursor_plan == len(new_shape) and cursor_self == self.tensor.dim():
                 break
 
+        tensor = self.tensor
         splitting_parity = functools.reduce(
             torch.logical_xor,
             (self._unsqueeze(sign, index, self.tensor.dim()) for index, sign in splitting_sign if self.arrow[index]),
