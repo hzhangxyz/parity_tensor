@@ -172,7 +172,7 @@ class GrassmannTensor:
     def _reorder_indices(self, edges: tuple[tuple[int, int], ...]) -> tuple[int, int, torch.Tensor, torch.Tensor]:
         parity = functools.reduce(
             torch.logical_xor,
-            (self._unsqueeze(self._edge_mask(even, odd), index, len(edges)) for index, [even, odd] in enumerate(edges)),
+            (self._unsqueeze(self._edge_mask(even, odd), index, len(edges)) for index, (even, odd) in enumerate(edges)),
             torch.zeros([], dtype=torch.bool, device=self.tensor.device),
         )
         flatten_parity = parity.flatten()
@@ -182,7 +182,7 @@ class GrassmannTensor:
 
         total = functools.reduce(
             torch.add,
-            (self._unsqueeze(self._edge_mask(even, odd), index, len(edges)).to(dtype=torch.int16) for index, [even, odd] in enumerate(edges)),
+            (self._unsqueeze(self._edge_mask(even, odd), index, len(edges)).to(dtype=torch.int16) for index, (even, odd) in enumerate(edges)),
             torch.zeros([], dtype=torch.int16, device=self.tensor.device),
         )
         count = total * (total - 1)
