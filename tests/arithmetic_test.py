@@ -118,6 +118,9 @@ def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor
     with pytest.raises(TypeError):
         tensor_a / unsupported_type
 
+    with pytest.raises(TypeError):
+        unsupported_type / tensor_a
+
     # Test __itruediv__ method.
     tensor_c = tensor_a.clone()
     tensor_c /= scalar
