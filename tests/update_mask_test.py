@@ -7,6 +7,21 @@ Initialization = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tens
 
 @pytest.fixture(params=[
     (
+        (),
+        (),
+        torch.randn([], dtype=torch.float32),
+    ),
+    (
+        (False, True),
+        ((2, 2), (0, 2)),
+        torch.randn([4, 2], dtype=torch.float32),
+    ),
+    (
+        (False, True),
+        ((2, 2), (0, 0)),
+        torch.randn([4, 0], dtype=torch.float32),
+    ),
+    (
         (True, False),
         ((2, 2), (3, 1)),
         torch.randn([4, 4], dtype=torch.float32),
