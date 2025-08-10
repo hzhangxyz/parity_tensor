@@ -10,6 +10,7 @@ Initialization = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tens
     ((False, True), ((2, 2), (1, 3)), torch.randn([4, 4])),
     ((False, True), ((2, 0), (1, 3)), torch.randn([2, 4])),
     ((True, False), ((0, 2), (1, 3)), torch.randn([2, 4])),
+    ((True, False), ((0, 0), (1, 3)), torch.randn([0, 4])),
     ((True,), ((2, 0),), torch.randn([2])),
     ((False,), ((0, 2),), torch.randn([2])),
     ((), (), torch.randn([])),
