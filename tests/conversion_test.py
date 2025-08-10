@@ -6,7 +6,7 @@ from grassmann_tensor import GrassmannTensor
 
 @pytest.fixture()
 def x() -> GrassmannTensor:
-    return GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4]))
+    return GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4], device="cpu:0"))
 
 
 @pytest.mark.parametrize("dtype_arg", ["position", "keyword", "none"])
@@ -21,7 +21,8 @@ def test_conversion(
     args: list[typing.Any] = []
     kwargs: dict[str, typing.Any] = {}
 
-    device = torch.device("cpu") if device_format == "object" else "cpu"
+    device_str = "cuda:0" if torch.cuda.is_available() else "cpu:0"
+    device = torch.device(device_str) if device_format == "object" else device_str
     match device_arg:
         case "position":
             args.append(device)
@@ -38,8 +39,16 @@ def test_conversion(
         case _:
             pass
 
-    if len(args) <= 1:
-        y = x.to(*args, **kwargs)
+    if len(args) > 1:
+        pytest.skip("Cannot pass both dtype and device as positional arguments")
+
+    y = x.to(*args, **kwargs)
+    assert isinstance(y, GrassmannTensor)
+    assert y.arrow == x.arrow
+    assert y.edges == x.edges
+    assert y.tensor.dtype == torch.complex128 if dtype_arg != "none" else torch.float32
+    assert y.tensor.device.type == (torch.device(device_str) if device_arg != "none" else torch.device("cpu:0")).type
+    assert torch.allclose(y.tensor, x.tensor.to(dtype=y.tensor.dtype, device=y.tensor.device))
 
 
 def test_conversion_duplicated_value(x: GrassmannTensor) -> None:
