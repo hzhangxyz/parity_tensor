@@ -6,6 +6,10 @@ PermuteCase = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tensor,
 
 
 @pytest.mark.parametrize("x", [
+    ((), (), torch.tensor(6), (), torch.tensor(6)),
+    ((False,), ((1, 1),), torch.tensor([1, 2]), (0,), torch.tensor([1, 2])),
+    ((False, True), ((1, 1), (0, 0)), torch.zeros([2, 0]), (1, 0), torch.zeros([0, 2])),
+    ((False, True), ((1, 1), (0, 1)), torch.tensor([[0], [4]]), (1, 0), torch.tensor([[0, -4]])),
     ((False, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (0, 1), torch.tensor([[1, 0], [0, 4]])),
     ((True, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (1, 0), torch.tensor([[1, 0], [0, -4]])),
     ((False, True, True), ((1, 1), (1, 1), (1, 1)), torch.tensor([[[1, 0], [0, 2]], [[0, 3], [4, 0]]]), (0, 2, 1), torch.tensor([[[1, 0], [0, -2]], [[0, 4], [3, 0]]])),
