@@ -33,3 +33,28 @@ def test_permute_fail(x: PermuteFailCase) -> None:
     grassmann_tensor = GrassmannTensor(arrow, edges, tensor)
     with pytest.raises(AssertionError):
         grassmann_tensor.permute(before_by_after)
+
+
+def test_permute_high_order() -> None:
+    edge = (2, 2)
+    a = GrassmannTensor((False, False, False, False, False, False), (edge, edge, edge, edge, edge, edge), torch.randn(4, 4, 4, 4, 4, 4)).update_mask()
+    # a[i, j, k, l, m, n] -> b[l, j, i, n, k, m]
+    b = a.permute((3, 1, 0, 5, 2, 4))
+    for i in range(4):
+        for j in range(4):
+            for k in range(4):
+                for l in range(4):
+                    for m in range(4):
+                        for n in range(4):
+                            p = [bool(x & 2) for x in (i, j, k, l, m, n)]
+                            if sum(p) % 2 != 0:
+                                continue
+                            # i j k l m n
+                            # (l) (i j k) m n
+                            # l (j) (i) k m n
+                            # l j i (n) (k m)
+                            sign = (p[3] & (p[0] ^ p[1] ^ p[2])) ^ (p[1] & p[0]) ^ (p[5] & (p[2] ^ p[4]))
+                            if sign:
+                                assert b.tensor[l, j, i, n, k, m] == -a.tensor[i, j, k, l, m, n]
+                            else:
+                                assert b.tensor[l, j, i, n, k, m] == a.tensor[i, j, k, l, m, n]
