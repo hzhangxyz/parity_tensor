@@ -24,6 +24,24 @@ def tensors(request: pytest.FixtureRequest) -> tuple[GrassmannTensor, GrassmannT
 
 
 @pytest.fixture(params=[
+    (
+        GrassmannTensor((False, False), ((2, 2), (1, 3)), torch.randn([4, 4])),
+        GrassmannTensor((False,), ((2, 2),), torch.randn([4])),
+    ),
+    (
+        GrassmannTensor((True, False, True), ((1, 1), (2, 2), (3, 1)), torch.randn([2, 4, 4])),
+        GrassmannTensor((True, False, True), ((1, 2), (2, 2), (3, 1)), torch.randn([3, 4, 4])),
+    ),
+    (
+        GrassmannTensor((True, True, False), ((1, 2), (2, 2), (3, 1)), torch.randn([3, 4, 4])),
+        GrassmannTensor((True, True, False, False), ((3, 2), (2, 2), (1, 1), (3, 1)), torch.randn([5, 4, 2, 4])),
+    ),
+])
+def mismatch_tensors(request: pytest.FixtureRequest) -> tuple[GrassmannTensor, GrassmannTensor]:
+    return request.param
+
+
+@pytest.fixture(params=[
     torch.randn([]),
     torch.randn([]).item(),
 ])
@@ -94,7 +112,7 @@ class FakeTensor:
         [1, 2, 3],  #list
         {1, 2},  #set
         object(),  #arbitrary object
-        FakeTensor(),  #a ill defined tensor-like object
+        FakeTensor(),  #an ill defined tensor-like object
     ])
 def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor, GrassmannTensor], scalar: torch.Tensor | float) -> None:
     tensor_a, tensor_b = tensors
@@ -196,3 +214,35 @@ def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor
     with pytest.raises(TypeError):
         tensor_c = tensor_a.clone()
         tensor_c /= unsupported_type
+
+
+def test_arithmetic_fail(mismatch_tensors: tuple[GrassmannTensor, GrassmannTensor]) -> None:
+    tensor_a, tensor_b = mismatch_tensors
+
+    # Test __add__ method.
+    with pytest.raises(AssertionError):
+        tensor_a + tensor_b
+    with pytest.raises(AssertionError):
+        tensor_c = tensor_a.clone()
+        tensor_c += tensor_b
+
+    # Test __sub__ method.
+    with pytest.raises(AssertionError):
+        tensor_a - tensor_b
+    with pytest.raises(AssertionError):
+        tensor_c = tensor_a.clone()
+        tensor_c -= tensor_b
+
+    # Test __mul__ method.
+    with pytest.raises(AssertionError):
+        tensor_a * tensor_b
+    with pytest.raises(AssertionError):
+        tensor_c = tensor_a.clone()
+        tensor_c *= tensor_b
+
+    # Test __truediv__ method.
+    with pytest.raises(AssertionError):
+        tensor_a / tensor_b
+    with pytest.raises(AssertionError):
+        tensor_c = tensor_a.clone()
+        tensor_c /= tensor_b
