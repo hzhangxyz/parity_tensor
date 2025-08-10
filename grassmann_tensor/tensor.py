@@ -68,19 +68,18 @@ class GrassmannTensor:
         """
         Copy the tensor to a specified device or copy it to a specified data type.
         """
-        if whatever is None:
-            pass
-        elif isinstance(whatever, torch.device):
-            assert device is None, "Duplicate device specification."
-            device = whatever
-        elif isinstance(whatever, torch.dtype):
-            assert dtype is None, "Duplicate dtype specification."
-            dtype = whatever
-        elif isinstance(whatever, str):
-            assert device is None, "Duplicate device specification."
-            device = torch.device(whatever)
-        else:
-            raise TypeError(f"Unsupported type for 'to': {type(whatever)}. Expected torch.device, torch.dtype, or str.")
+        match whatever:
+            case torch.device():
+                assert device is None, "Duplicate device specification."
+                device = whatever
+            case torch.dtype():
+                assert dtype is None, "Duplicate dtype specification."
+                dtype = whatever
+            case str():
+                assert device is None, "Duplicate device specification."
+                device = torch.device(whatever)
+            case None:
+                pass
         match (device, dtype):
             case (None, None):
                 return self

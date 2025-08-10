@@ -42,11 +42,6 @@ def test_conversion(
         y = x.to(*args, **kwargs)
 
 
-def test_conversion_invalid_type(x: GrassmannTensor) -> None:
-    with pytest.raises(TypeError):
-        x.to(2333)  # type: ignore[arg-type]
-
-
 def test_conversion_duplicated_value(x: GrassmannTensor) -> None:
     with pytest.raises(AssertionError):
         x.to(torch.device("cpu"), device=torch.device("cpu"))
