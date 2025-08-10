@@ -6,6 +6,10 @@ ReverseCase = tuple[tuple[bool, ...], tuple[tuple[int, int], ...], torch.Tensor,
 
 
 @pytest.mark.parametrize("x", [
+    ((), (), torch.tensor(6), (), torch.tensor(6)),
+    ((False, False), ((1, 1), (0, 0)), torch.zeros([2, 0]), (0,), torch.zeros([2, 0])),
+    ((False, False), ((1, 1), (0, 1)), torch.tensor([[0], [4]]), (0,), torch.tensor([[0], [4]])),
+    ((False, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (), torch.tensor([[1, 0], [0, 4]])),
     ((False, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (0,), torch.tensor([[1, 0], [0, 4]])),
     ((True, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (0,), torch.tensor([[1, 0], [0, -4]])),
     ((False, False), ((1, 1), (1, 1)), torch.tensor([[1, 0], [0, 4]]), (1,), torch.tensor([[1, 0], [0, 4]])),
