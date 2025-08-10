@@ -1,3 +1,4 @@
+from __future__ import annotations
 import typing
 import pytest
 import torch
@@ -30,17 +31,71 @@ def scalar(request: pytest.FixtureRequest) -> torch.Tensor | float:
     return request.param
 
 
-UNSUPPORTED_TYPES = [
-    "string",  #string
-    None,  #NoneType
-    {"key", "value"},  #dict
-    [1, 2, 3],  #list
-    {1, 2},  #set
-    object(),  #arbitrary object
-]
+class FakeTensor:
+
+    def __init__(self) -> None:
+        pass
+
+    def __add__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __radd__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __sub__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __mul__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __truediv__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
+
+    def __rtruediv__(self, other: typing.Any) -> FakeTensor:
+        if isinstance(other, torch.Tensor):
+            return self
+        else:
+            return NotImplemented
 
 
-@pytest.mark.parametrize("unsupported_type", UNSUPPORTED_TYPES)
+@pytest.mark.parametrize(
+    "unsupported_type",
+    [
+        "string",  #string
+        None,  #NoneType
+        {"key", "value"},  #dict
+        [1, 2, 3],  #list
+        {1, 2},  #set
+        object(),  #arbitrary object
+        FakeTensor(),  #a ill defined tensor-like object
+    ])
 def test_arithmetic(unsupported_type: typing.Any, tensors: tuple[GrassmannTensor, GrassmannTensor], scalar: torch.Tensor | float) -> None:
     tensor_a, tensor_b = tensors
 
