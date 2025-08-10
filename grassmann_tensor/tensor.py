@@ -391,8 +391,11 @@ class GrassmannTensor:
         if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor += other._tensor
-        else:
+            return self
+        try:
             self._tensor += other
+        except TypeError:
+            return NotImplemented
         if isinstance(self._tensor, torch.Tensor):
             return self
         return NotImplemented
@@ -431,8 +434,11 @@ class GrassmannTensor:
         if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor -= other._tensor
-        else:
+            return self
+        try:
             self._tensor -= other
+        except TypeError:
+            return NotImplemented
         if isinstance(self._tensor, torch.Tensor):
             return self
         return NotImplemented
@@ -471,8 +477,11 @@ class GrassmannTensor:
         if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor *= other._tensor
-        else:
+            return self
+        try:
             self._tensor *= other
+        except TypeError:
+            return NotImplemented
         if isinstance(self._tensor, torch.Tensor):
             return self
         return NotImplemented
@@ -511,8 +520,11 @@ class GrassmannTensor:
         if isinstance(other, GrassmannTensor):
             self._validate_edge_compatibility(other)
             self._tensor /= other._tensor
-        else:
+            return self
+        try:
             self._tensor /= other
+        except TypeError:
+            return NotImplemented
         if isinstance(self._tensor, torch.Tensor):
             return self
         return NotImplemented
