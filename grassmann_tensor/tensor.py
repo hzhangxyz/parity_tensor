@@ -394,7 +394,9 @@ class GrassmannTensor:
             self._tensor += other._tensor
         else:
             self._tensor += other
-        return self
+        if isinstance(self._tensor, torch.Tensor):
+            return self
+        return NotImplemented
 
     def __sub__(self, other: typing.Any) -> GrassmannTensor:
         if isinstance(other, GrassmannTensor):
@@ -432,7 +434,9 @@ class GrassmannTensor:
             self._tensor -= other._tensor
         else:
             self._tensor -= other
-        return self
+        if isinstance(self._tensor, torch.Tensor):
+            return self
+        return NotImplemented
 
     def __mul__(self, other: typing.Any) -> GrassmannTensor:
         if isinstance(other, GrassmannTensor):
@@ -470,7 +474,9 @@ class GrassmannTensor:
             self._tensor *= other._tensor
         else:
             self._tensor *= other
-        return self
+        if isinstance(self._tensor, torch.Tensor):
+            return self
+        return NotImplemented
 
     def __truediv__(self, other: typing.Any) -> GrassmannTensor:
         if isinstance(other, GrassmannTensor):
@@ -508,7 +514,9 @@ class GrassmannTensor:
             self._tensor /= other._tensor
         else:
             self._tensor /= other
-        return self
+        if isinstance(self._tensor, torch.Tensor):
+            return self
+        return NotImplemented
 
     def clone(self) -> GrassmannTensor:
         """
