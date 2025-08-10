@@ -78,7 +78,7 @@ class GrassmannTensor:
             case str():
                 assert device is None, "Duplicate device specification."
                 device = torch.device(whatever)
-            case None:
+            case _:
                 pass
         match (device, dtype):
             case (None, None):
