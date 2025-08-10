@@ -3,6 +3,7 @@ env
 __pycache__
 grassmann_tensor/_version.py
 build
+.vscode
 .idea
 .venv
 .coverage
