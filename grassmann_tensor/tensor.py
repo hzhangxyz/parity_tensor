@@ -236,7 +236,13 @@ class GrassmannTensor:
             else:
                 cursor_new_shape = new_shape[cursor_plan]
                 total = cursor_new_shape if isinstance(cursor_new_shape, int) else cursor_new_shape[0] + cursor_new_shape[1]
-                if total >= self.tensor.shape[cursor_self]:
+                if total == 1:
+                    # Additional pure edge
+                    arrow.append(False)
+                    edges.append((1, 0) if isinstance(cursor_new_shape, int) else cursor_new_shape)
+                    shape.append(1)
+                    cursor_plan += 1
+                elif total >= self.tensor.shape[cursor_self]:
                     # Merging
                     new_cursor_self = cursor_self
                     self_total = 1
