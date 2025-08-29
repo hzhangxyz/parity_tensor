@@ -38,12 +38,6 @@ repos:
   - id: sort-simple-yaml
   - id: trailing-whitespace
 
-- repo: https://github.com/google/yapf
-  rev: v0.40.2
-  hooks:
-  - id: yapf
-    language: system
-
 - repo: https://github.com/pylint-dev/pylint
   rev: v3.3.1
   hooks:
@@ -55,3 +49,10 @@ repos:
   hooks:
   - id: mypy
     language: system
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.11
+  hooks:
+  - id: ruff-check
+    args: [--fix]
+  - id: ruff-format
